@@ -7,7 +7,7 @@ import io.jenkins.plugins.lgtm.domain.PullRequest
 
 class BitbucketServerPullRequestApiImpl(
     private val httpClient: HttpClient,
-    private val authentication: BItBucketServerAuthentication,
+    private val authentication: BitbucketServerAuthentication,
 ) : BitbucketServerPullRequestApi {
     override fun sendLgtmPicture(lgtmPicture: LgtmPicture, pullRequest: PullRequest): Either<String, String> {
         TODO("Not yet implemented")
