@@ -9,7 +9,12 @@ class BitbucketServerPullRequestApiImpl(
     private val httpClient: HttpClient,
     private val authentication: BitbucketServerAuthentication,
 ) : BitbucketServerPullRequestApi {
+    companion object {
+        const val host = "" // TODO
+        const val path = ""
+    }
+
     override fun sendLgtmPicture(lgtmPicture: LgtmPicture, pullRequest: PullRequest): Either<String, String> {
-        TODO("Not yet implemented")
+        TODO()
     }
 }

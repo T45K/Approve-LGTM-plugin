@@ -1,6 +1,5 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
-
 import spock.lang.Specification
 
 class LgtmPictureRepositoryImplTest extends Specification {
