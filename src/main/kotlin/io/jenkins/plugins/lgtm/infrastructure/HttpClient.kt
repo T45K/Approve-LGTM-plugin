@@ -14,7 +14,7 @@ class HttpClient {
 
     fun <T> get(
         host: String, path: String, clazz: Class<T>,
-        auth: Authorization = NoAuthorization,
+        auth: Authorization? = null,
     ): T? {
         val url = HttpUrl.Builder()
             .scheme("https")
@@ -42,7 +42,7 @@ class HttpClient {
         host: String, path: String,
         requestBodyObject: Req,
         responseBodyClass: Class<Res>,
-        auth: Authorization = NoAuthorization,
+        auth: Authorization? = null,
     ): Res? {
         val url = HttpUrl.Builder()
             .scheme("https")
@@ -69,7 +69,7 @@ class HttpClient {
         }
     }
 
-    private fun Request.Builder.authorizationHeader(auth: Authorization): Request.Builder =
-        if (auth == NoAuthorization) this@authorizationHeader
+    private fun Request.Builder.authorizationHeader(auth: Authorization?): Request.Builder =
+        if (auth == null) this@authorizationHeader
         else this.header("Authorization", auth.asHeaderValue())
 }

@@ -1,4 +1,3 @@
 package io.jenkins.plugins.lgtm.domain
 
-class PullRequest {
-}
+data class PullRequest(val id: String)
