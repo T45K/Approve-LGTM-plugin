@@ -14,6 +14,7 @@ import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
@@ -56,7 +57,14 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
 
         final Optional<UsernamePasswordCredentialsImpl> bitbucketUsernamePassword = Optional.ofNullable(
             CredentialsProvider.findCredentialById(descriptor.usernamePasswordId, UsernamePasswordCredentialsImpl.class, run));
-        // TODO
+        new EntryPoint(
+            listener.getLogger(),
+            definedName, inputName,
+            descriptor.getHostName(), organizationName, repositoryName,
+            bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getUsername).orElseThrow(),
+            bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getPassword).map(Secret::getPlainText).orElseThrow(),
+            pullRequestId
+        ).start();
     }
 
     @Symbol("approveLgtm")

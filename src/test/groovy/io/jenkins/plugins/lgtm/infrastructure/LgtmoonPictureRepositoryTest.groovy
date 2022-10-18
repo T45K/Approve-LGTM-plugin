@@ -2,11 +2,11 @@ package io.jenkins.plugins.lgtm.infrastructure
 
 import spock.lang.Specification
 
-class LgtmPictureRepositoryImplTest extends Specification {
+class LgtmoonPictureRepositoryTest extends Specification {
 
     def 'call real server'() {
         given:
-        def sut = new LgtmPictureRepositoryImpl(new HttpClient())
+        def sut = new LgtmoonPictureRepository(new HttpClientImpl())
 
         when:
         def lgtmPicture = sut.findRandom()

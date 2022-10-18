@@ -1,20 +1,19 @@
 package io.jenkins.plugins.lgtm.usecase
 
-import io.jenkins.plugins.lgtm.domain.BitbucketServerPullRequestApi
-import io.jenkins.plugins.lgtm.domain.LgtmPictureRepository
-import io.jenkins.plugins.lgtm.domain.PullRequest
+import arrow.core.Either
+import io.jenkins.plugins.lgtm.domain.git.BitbucketServerUser
+import io.jenkins.plugins.lgtm.domain.git.PullRequest
 import io.jenkins.plugins.lgtm.presentation.JenkinsLogger
 
-class PostLgtmPictureUsecase(
-    private val lgtmPictureRepository: LgtmPictureRepository,
-    private val bitbucketServerPullRequestApi: BitbucketServerPullRequestApi,
-) {
-    fun execute(pullRequest: PullRequest) {
-        val lgtmPicture = lgtmPictureRepository.findRandom() ?: run {
-            JenkinsLogger.info("Cannot retrieve LGTM picture from API.")
-            return
-        }
+class PostLgtmPictureUsecase {
+    fun execute(user: BitbucketServerUser, pullRequest: PullRequest) {
+        when (val commentPostResult = user.sendPictureTo(pullRequest)) {
+            is Either.Left -> {
+                JenkinsLogger.info("Failed to execute job due to the following reason.")
+                JenkinsLogger.info(commentPostResult.value)
+            }
 
-        bitbucketServerPullRequestApi.sendLgtmPicture(lgtmPicture, pullRequest)
+            is Either.Right -> JenkinsLogger.info("Succeeded to execute job.")
+        }
     }
 }

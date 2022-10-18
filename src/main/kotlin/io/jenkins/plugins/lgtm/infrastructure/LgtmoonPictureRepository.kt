@@ -1,10 +1,10 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
-import io.jenkins.plugins.lgtm.domain.LgtmPicture
-import io.jenkins.plugins.lgtm.domain.LgtmPictureRepository
+import io.jenkins.plugins.lgtm.domain.picture.LgtmPicture
+import io.jenkins.plugins.lgtm.domain.picture.LgtmPictureRepository
 
-class LgtmPictureRepositoryImpl(
-    private val httpClient: HttpClient,
+class LgtmoonPictureRepository(
+    private val httpClient: HttpClientImpl,
 ) : LgtmPictureRepository {
     companion object {
         const val host = "lgtmoon.dev"

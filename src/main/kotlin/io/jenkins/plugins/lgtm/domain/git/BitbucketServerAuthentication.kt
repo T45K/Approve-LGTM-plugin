@@ -1,5 +1,6 @@
-package io.jenkins.plugins.lgtm.infrastructure
+package io.jenkins.plugins.lgtm.domain.git
 
+import io.jenkins.plugins.lgtm.domain.Authorization
 import java.util.Base64
 
 class BitbucketServerAuthentication(

@@ -1,6 +1,8 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.jenkins.plugins.lgtm.domain.Authorization
+import io.jenkins.plugins.lgtm.domain.HttpClient
 import io.jenkins.plugins.lgtm.presentation.JenkinsLogger
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -8,13 +10,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class HttpClient {
+class HttpClientImpl : HttpClient {
     private val client = OkHttpClient()
     private val objectMapper = jacksonObjectMapper()
 
-    fun <T> get(
+    override fun <T> get(
         host: String, path: String, clazz: Class<T>,
-        auth: Authorization? = null,
+        auth: Authorization?,
     ): T? {
         val url = HttpUrl.Builder()
             .scheme("https")
@@ -38,11 +40,11 @@ class HttpClient {
         }
     }
 
-    fun <Req, Res> post(
+    override fun <Req, Res> post(
         host: String, path: String,
         requestBodyObject: Req,
         responseBodyClass: Class<Res>,
-        auth: Authorization? = null,
+        auth: Authorization?,
     ): Res? {
         val url = HttpUrl.Builder()
             .scheme("https")
