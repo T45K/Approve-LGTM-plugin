@@ -5,13 +5,13 @@ import arrow.core.left
 import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.jenkins.plugins.lgtm.domain.Authorization
+import io.jenkins.plugins.lgtm.util.`|`
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import io.jenkins.plugins.lgtm.util.`|`
 
 class HttpClient {
     private val client = OkHttpClient.Builder()
