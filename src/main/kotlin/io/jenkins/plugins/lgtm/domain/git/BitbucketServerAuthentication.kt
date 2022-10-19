@@ -9,6 +9,6 @@ class BitbucketServerAuthentication(
 ) : Authorization {
     override fun asHeaderValue(): String {
         val encodedSecret = Base64.getEncoder().encodeToString("$username:$password".toByteArray())
-        return "Basic: $encodedSecret"
+        return "Basic $encodedSecret"
     }
 }

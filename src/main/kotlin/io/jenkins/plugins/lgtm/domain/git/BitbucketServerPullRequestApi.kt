@@ -21,7 +21,7 @@ class BitbucketServerPullRequestApi(
             hostName,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
             PullRequestCommentRequest(comment),
-            Unit.javaClass,
+            Any::class.java,
             authentication,
         )
             ?.let { Either.Right("Succeeded to post a comment") }

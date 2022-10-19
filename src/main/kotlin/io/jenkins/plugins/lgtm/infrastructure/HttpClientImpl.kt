@@ -5,13 +5,28 @@ import io.jenkins.plugins.lgtm.domain.Authorization
 import io.jenkins.plugins.lgtm.domain.HttpClient
 import io.jenkins.plugins.lgtm.presentation.JenkinsLogger
 import okhttp3.HttpUrl
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class HttpClientImpl : HttpClient {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(Interceptor { chain ->
+            chain.request().let(chain::proceed)
+                .also {
+                    if (!it.isSuccessful) {
+                        throw CommunicationNotSuccessfulException(
+                            """
+                            status code: ${it.code}
+                            response body: ${it.body.string()}
+                        """.trimIndent()
+                        )
+                    }
+                }
+        })
+        .build()
     private val objectMapper = jacksonObjectMapper()
 
     override fun <T> get(
@@ -35,7 +50,8 @@ class HttpClientImpl : HttpClient {
                 .execute()
                 .use { objectMapper.readValue(it.body.bytes(), clazz) }
         } catch (e: Exception) {
-            JenkinsLogger.info(e.message ?: e.stackTraceToString())
+            JenkinsLogger.info(e.message ?: "")
+            JenkinsLogger.info(e.stackTraceToString())
             null
         }
     }
@@ -66,7 +82,8 @@ class HttpClientImpl : HttpClient {
                 .execute()
                 .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
         } catch (e: Exception) {
-            JenkinsLogger.info(e.message ?: e.stackTraceToString())
+            JenkinsLogger.info(e.message ?: "")
+            JenkinsLogger.info(e.stackTraceToString())
             null
         }
     }
@@ -75,3 +92,5 @@ class HttpClientImpl : HttpClient {
         if (auth == null) this@authorizationHeader
         else this.header("Authorization", auth.asHeaderValue())
 }
+
+class CommunicationNotSuccessfulException(override val message: String?) : RuntimeException()

@@ -11,6 +11,7 @@ class PostLgtmPictureUsecase {
             is Either.Left -> {
                 JenkinsLogger.info("Failed to execute job due to the following reason.")
                 JenkinsLogger.info(commentPostResult.value)
+                throw RuntimeException()
             }
 
             is Either.Right -> JenkinsLogger.info("Succeeded to execute job.")
