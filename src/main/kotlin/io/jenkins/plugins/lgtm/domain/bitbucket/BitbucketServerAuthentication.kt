@@ -1,4 +1,4 @@
-package io.jenkins.plugins.lgtm.domain.git
+package io.jenkins.plugins.lgtm.domain.bitbucket
 
 import io.jenkins.plugins.lgtm.domain.Authorization
 import java.util.Base64

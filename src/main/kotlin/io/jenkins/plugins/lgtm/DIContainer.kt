@@ -1,18 +1,17 @@
 package io.jenkins.plugins.lgtm
 
 import com.google.common.annotations.VisibleForTesting
-import io.jenkins.plugins.lgtm.domain.HttpClient
-import io.jenkins.plugins.lgtm.domain.git.BitbucketServerPullRequestApi
-import io.jenkins.plugins.lgtm.domain.git.BitbucketServerUser
+import io.jenkins.plugins.lgtm.domain.bitbucket.AuthenticatedBitbucketServerUser
 import io.jenkins.plugins.lgtm.domain.picture.LgtmPictureRepository
-import io.jenkins.plugins.lgtm.infrastructure.HttpClientImpl
+import io.jenkins.plugins.lgtm.infrastructure.BitbucketServerPullRequestApiImpl
+import io.jenkins.plugins.lgtm.infrastructure.HttpClient
 import io.jenkins.plugins.lgtm.infrastructure.LgtmoonPictureRepository
 import kotlin.reflect.KClass
 
 class DIContainer {
     companion object {
         private val objects = mutableMapOf<KClass<*>, Any?>().apply {
-            val httpClient = HttpClientImpl()
+            val httpClient = HttpClient()
             put(HttpClient::class, httpClient)
 
             val lgtmPictureRepository = LgtmoonPictureRepository(httpClient)
@@ -28,14 +27,14 @@ class DIContainer {
         hostName: String,
         organizationName: String,
         repositoryName: String,
-    ): BitbucketServerPullRequestApi =
-        BitbucketServerPullRequestApi(hostName, organizationName, repositoryName, get(HttpClient::class))
+    ): BitbucketServerPullRequestApiImpl =
+        BitbucketServerPullRequestApiImpl(hostName, organizationName, repositoryName, get(HttpClient::class))
 
     fun bitbucketServerUserFactory(
         username: String,
         password: String,
-        bitbucketServerPullRequestApi: BitbucketServerPullRequestApi,
-    ): BitbucketServerUser = BitbucketServerUser(
+        bitbucketServerPullRequestApi: BitbucketServerPullRequestApiImpl,
+    ): AuthenticatedBitbucketServerUser = AuthenticatedBitbucketServerUser(
         username, password,
         get(LgtmPictureRepository::class),
         bitbucketServerPullRequestApi,

@@ -1,7 +1,7 @@
 package io.jenkins.plugins.lgtm
 
 import io.jenkins.plugins.lgtm.domain.HttpClient
-import io.jenkins.plugins.lgtm.domain.git.BitbucketServerUser
+import io.jenkins.plugins.lgtm.domain.bitbucket.AuthenticatedBitbucketServerUser
 import io.jenkins.plugins.lgtm.domain.picture.LgtmPictureRepository
 import io.jenkins.plugins.lgtm.infrastructure.HttpClientImpl
 import io.jenkins.plugins.lgtm.infrastructure.LgtmoonPictureRepository
@@ -24,7 +24,7 @@ class DIContainerTest extends Specification {
 
   def 'get throws NoSuchElement exception when given type is not target of DI'() {
     when:
-    sut.get(JvmClassMappingKt.getKotlinClass(BitbucketServerUser))
+    sut.get(JvmClassMappingKt.getKotlinClass(AuthenticatedBitbucketServerUser))
 
     then:
     thrown(NoSuchElementException)

@@ -1,38 +1,39 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.jenkins.plugins.lgtm.domain.Authorization
-import io.jenkins.plugins.lgtm.domain.HttpClient
-import io.jenkins.plugins.lgtm.presentation.JenkinsLogger
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import io.jenkins.plugins.lgtm.util.`|`
 
-class HttpClientImpl : HttpClient {
+class HttpClient {
     private val client = OkHttpClient.Builder()
         .addInterceptor(Interceptor { chain ->
-            chain.request().let(chain::proceed)
-                .also {
-                    if (!it.isSuccessful) {
-                        throw CommunicationNotSuccessfulException(
-                            """
-                            status code: ${it.code}
-                            response body: ${it.body.string()}
-                        """.trimIndent()
-                        )
-                    }
-                }
+            val response = chain.request() `|` chain::proceed
+            if (!response.isSuccessful) {
+                throw CommunicationFailureException(
+                    """
+                        status code: ${response.code}
+                        response body: ${response.body.string()}
+                    """.trimIndent()
+                )
+            }
+            response
         })
         .build()
     private val objectMapper = jacksonObjectMapper()
 
-    override fun <T> get(
+    fun <T> get(
         host: String, path: String, clazz: Class<T>,
-        auth: Authorization?,
-    ): T? {
+        auth: Authorization? = null,
+    ): Either<List<String>, T> {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(host)
@@ -49,19 +50,18 @@ class HttpClientImpl : HttpClient {
             client.newCall(request)
                 .execute()
                 .use { objectMapper.readValue(it.body.bytes(), clazz) }
+                .right()
         } catch (e: Exception) {
-            JenkinsLogger.info(e.message ?: "")
-            JenkinsLogger.info(e.stackTraceToString())
-            null
+            listOf(e.messageWithStackTrace()).left()
         }
     }
 
-    override fun <Req, Res> post(
+    fun <Req, Res> post(
         host: String, path: String,
         requestBodyObject: Req,
         responseBodyClass: Class<Res>,
-        auth: Authorization?,
-    ): Res? {
+        auth: Authorization? = null,
+    ): Either<List<String>, Res> {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(host)
@@ -81,10 +81,36 @@ class HttpClientImpl : HttpClient {
             client.newCall(request)
                 .execute()
                 .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
+                .right()
         } catch (e: Exception) {
-            JenkinsLogger.info(e.message ?: "")
-            JenkinsLogger.info(e.stackTraceToString())
-            null
+            listOf(e.messageWithStackTrace()).left()
+        }
+    }
+
+    fun <T> delete(
+        host: String, path: String,
+        responseBodyClass: Class<T>,
+        auth: Authorization? = null,
+    ): Either<List<String>, T> {
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host(host)
+            .addPathSegments(path)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .authorizationHeader(auth)
+            .delete()
+            .build()
+
+        return try {
+            client.newCall(request)
+                .execute()
+                .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
+                .right()
+        } catch (e: Exception) {
+            listOf(e.messageWithStackTrace()).left()
         }
     }
 
@@ -93,4 +119,13 @@ class HttpClientImpl : HttpClient {
         else this.header("Authorization", auth.asHeaderValue())
 }
 
-class CommunicationNotSuccessfulException(override val message: String?) : RuntimeException()
+class CommunicationFailureException(override val message: String?) : RuntimeException()
+
+private fun Exception.messageWithStackTrace(): String =
+    if (message != null) {
+        """$message
+            |${stackTraceToString()}
+        """.trimMargin()
+    } else {
+        stackTraceToString()
+    }
