@@ -1,12 +1,18 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:entry title="${%Name}" field="name">
-        <f:textbox />
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="Input name" field="inputName" description="Incoming user name of webhook.">
+        <f:textbox/>
     </f:entry>
-    <f:advanced>
-        <f:entry title="${%French}" field="useFrench"
-                 description="${%FrenchDescr}">
-            <f:checkbox />
-        </f:entry>
-    </f:advanced>
+    <f:entry title="Defined name" field="definedName" description="If the input name is not same as this, this job will not start.">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Organization name" field="organizationName" description="Repository organization name.">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Repository name" field="repositoryName" description="Repository name.">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Pull Request ID" field="pullRequestId" description="Which pull request this job should post picture?">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>
