@@ -29,18 +29,20 @@ class BitbucketServerPullRequestApiImpl(
             authentication,
         ).mapLeft { it + "Failed to post comment." }
 
-    // https://developer.atlassian.com/server/bitbucket/rest/v805/api-group-pull-requests/#api-api-latest-projects-projectkey-repos-repositoryslug-pull-requests-pullrequestid-comments-get
+    // https://developer.atlassian.com/server/bitbucket/rest/v805/api-group-pull-requests/#api-api-latest-projects-projectkey-repos-repositoryslug-pull-requests-pullrequestid-activities-get
     override fun fetchAllCommentsIn(
         pullRequest: PullRequest,
         authentication: BitbucketServerAuthentication
     ): Either<List<String>, List<PullRequestComment>> =
         httpClient.get(
             hostName,
-            "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
-            CommentsResponse::class.java,
+            "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/activities",
+            ActivitiesResponse::class.java,
             authentication
         ).map { response ->
-            response.values.map { PullRequestComment(it.id, it.text, BitbucketServerUser(it.author.name)) }
+            response.values
+                .filter { it.isCommentAction() }
+                .map { PullRequestComment(it.comment!!.id, it.comment.text, BitbucketServerUser(it.user.name)) }
         }.mapLeft { it + "Failed to fetch comments." }
 
     override fun deleteComment(
@@ -58,8 +60,12 @@ class BitbucketServerPullRequestApiImpl(
 
 data class PullRequestCommentRequest(val text: String)
 
-data class CommentsResponse(val values: List<CommentResponse>)
+data class ActivitiesResponse(val values: List<ActivityResponse>) {
+    data class ActivityResponse(val action: String, val comment: CommentResponse?, val user: UserResponse) {
+        data class UserResponse(val name: String)
 
-data class CommentResponse(val id: Int, val text: String, val author: AuthorResponse)
+        data class CommentResponse(val id: Int, val text: String)
 
-data class AuthorResponse(val name: String) // TODO: nameかdisplayNameのどっちか
+        fun isCommentAction(): Boolean = this.action == "COMMENTED" && this.comment != null
+    }
+}
