@@ -15,7 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class HttpClient {
+open class HttpClient {
     private val client = OkHttpClient.Builder()
         .addInterceptor(Interceptor { chain ->
             val response = chain.request() `|` chain::proceed
@@ -32,7 +32,7 @@ class HttpClient {
         .build()
     private val objectMapper = jacksonObjectMapper()
 
-    fun <T> get(
+    open fun <T> get(
         base: String, path: String, clazz: Class<T>,
         auth: Authorization? = null,
     ): Either<NonEmptyList<String>, T> {
