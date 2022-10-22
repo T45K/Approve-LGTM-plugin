@@ -1,6 +1,7 @@
 package io.jenkins.plugins.lgtm.domain.bitbucket
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 
 interface BitbucketServerPullRequestApi {
 
@@ -8,16 +9,16 @@ interface BitbucketServerPullRequestApi {
         commentText: String,
         pullRequest: PullRequest,
         authentication: BitbucketServerAuthentication,
-    ): Either<List<String>, *>
+    ): Either<NonEmptyList<String>, *>
 
     fun fetchAllCommentsIn(
         pullRequest: PullRequest,
         authentication: BitbucketServerAuthentication,
-    ): Either<List<String>, List<PullRequestComment>>
+    ): Either<NonEmptyList<String>, List<PullRequestComment>>
 
     fun deleteComment(
         pullRequest: PullRequest,
         comment: PullRequestComment,
         authentication: BitbucketServerAuthentication,
-    ): Either<List<String>, *>
+    ): Either<NonEmptyList<String>, *>
 }

@@ -1,6 +1,7 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import io.jenkins.plugins.lgtm.domain.picture.LgtmPicture
 import io.jenkins.plugins.lgtm.domain.picture.LgtmPictureRepository
 
@@ -12,7 +13,7 @@ class LgtmoonPictureRepository(
         const val path = "api/images/random"
     }
 
-    override fun findRandom(): Either<List<String>, LgtmPicture> =
+    override fun findRandom(): Either<NonEmptyList<String>, LgtmPicture> =
         httpClient.get(host, path, LgtmoonApiResponse::class.java)
             .map { LgtmPicture(it.images[0].url) }
             .mapLeft { it + "Failed to fetch LGTM picture." }
