@@ -6,7 +6,7 @@ class LgtmoonPictureRepositoryTest extends Specification {
 
     def 'call real server'() {
         given:
-        def sut = new LgtmoonPictureRepository(new HttpClientImpl())
+        def sut = new LgtmoonPictureRepository(new HttpClient())
 
         when:
         def lgtmPicture = sut.findRandom()

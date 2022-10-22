@@ -15,4 +15,7 @@
     <f:entry title="Pull Request ID" field="pullRequestId" description="Which pull request this job should post picture?">
         <f:textbox/>
     </f:entry>
+    <f:entry title="Event key" field="eventKey" description="Webhook event name.">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>
