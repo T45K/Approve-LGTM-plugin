@@ -50,6 +50,26 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
         this.eventKey = eventKey;
     }
 
+    public String getInputName() {
+        return inputName;
+    }
+
+    public String getDefinedName() {
+        return definedName;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    public String getPullRequestId() {
+        return pullRequestId;
+    }
+
     @Override
     public void perform(@NotNull final Run<?, ?> run,
                         @NotNull final FilePath workspace,
