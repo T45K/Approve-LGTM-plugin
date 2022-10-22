@@ -9,12 +9,12 @@ class LgtmoonPictureRepository(
     private val httpClient: HttpClient,
 ) : LgtmPictureRepository {
     companion object {
-        const val host = "lgtmoon.dev"
+        const val base = "https://lgtmoon.dev"
         const val path = "api/images/random"
     }
 
     override fun findRandom(): Either<NonEmptyList<String>, LgtmPicture> =
-        httpClient.get(host, path, LgtmoonApiResponse::class.java)
+        httpClient.get(base, path, LgtmoonApiResponse::class.java)
             .map { LgtmPicture(it.images[0].url) }
             .mapLeft { it + "Failed to fetch LGTM picture." }
 }

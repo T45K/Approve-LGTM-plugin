@@ -10,7 +10,7 @@ class EntryPoint(
     private val jenkinsPrintStream: PrintStream,
     private val definedUserName: String,
     private val inputUserName: String,
-    private val hostName: String,
+    private val baseUrl: String,
     private val organizationName: String,
     private val repositoryName: String,
     private val username: String,
@@ -37,7 +37,7 @@ class EntryPoint(
         }
 
         val container = DIContainer()
-        val api = container.bitbucketServerPullRequestApiFactory(hostName, organizationName, repositoryName)
+        val api = container.bitbucketServerPullRequestApiFactory(baseUrl, organizationName, repositoryName)
         val user = container.bitbucketServerUserFactory(username, password, api)
         val pullRequest = PullRequest(pullRequestId)
 
