@@ -24,11 +24,11 @@ class DIContainer {
     fun <T> get(clazz: KClass<*>): T = objects[clazz] as? T ?: throw NoSuchElementException()
 
     fun bitbucketServerPullRequestApiFactory(
-        hostName: String,
+        baseUrl: String,
         organizationName: String,
         repositoryName: String,
     ): BitbucketServerPullRequestApiImpl =
-        BitbucketServerPullRequestApiImpl(hostName, organizationName, repositoryName, get(HttpClient::class))
+        BitbucketServerPullRequestApiImpl(baseUrl, organizationName, repositoryName, get(HttpClient::class))
 
     fun bitbucketServerUserFactory(
         username: String,

@@ -52,7 +52,7 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
         new EntryPoint(
             listener.getLogger(),
             definedName, inputName,
-            descriptor.getHostName(), organizationName, repositoryName,
+            descriptor.getBaseUrl(), organizationName, repositoryName,
             bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getUsername).orElseThrow(),
             bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getPassword).map(Secret::getPlainText).orElseThrow(),
             pullRequestId, eventKey
@@ -64,7 +64,7 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
     @Getter
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-        private String hostName;
+        private String baseUrl;
         private String usernamePasswordId;
 
         public DescriptorImpl() {
@@ -74,7 +74,7 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
         @Override
         public boolean configure(final StaplerRequest req, final JSONObject json) {
             final JSONObject globalSettings = json.getJSONObject("approveLgtm");
-            this.hostName = globalSettings.getString("hostName");
+            this.baseUrl = globalSettings.getString("baseUrl");
             this.usernamePasswordId = globalSettings.getString("usernamePasswordId");
             save();
             return true;

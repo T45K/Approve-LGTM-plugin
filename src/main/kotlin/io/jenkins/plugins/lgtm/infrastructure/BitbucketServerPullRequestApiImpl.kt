@@ -9,7 +9,7 @@ import io.jenkins.plugins.lgtm.domain.bitbucket.PullRequest
 import io.jenkins.plugins.lgtm.domain.bitbucket.PullRequestComment
 
 class BitbucketServerPullRequestApiImpl(
-    private val hostName: String,
+    private val baseUrl: String,
     private val organizationName: String,
     private val repositoryName: String,
     private val httpClient: HttpClient,
@@ -23,7 +23,7 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, *> =
         httpClient.post(
-            hostName,
+            baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
             PullRequestCommentRequest(commentText),
             Any::class.java,
@@ -36,7 +36,7 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, List<PullRequestComment>> =
         httpClient.get(
-            hostName,
+            baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/activities",
             ActivitiesResponse::class.java,
             authentication
@@ -52,7 +52,7 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, *> =
         httpClient.delete(
-            hostName,
+            baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments/${comment.id}",
             Any::class.java,
             authentication
