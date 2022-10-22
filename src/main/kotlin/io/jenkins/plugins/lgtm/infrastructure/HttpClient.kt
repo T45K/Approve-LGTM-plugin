@@ -1,7 +1,9 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import arrow.core.left
+import arrow.core.nonEmptyListOf
 import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.jenkins.plugins.lgtm.domain.Authorization
@@ -33,7 +35,7 @@ class HttpClient {
     fun <T> get(
         host: String, path: String, clazz: Class<T>,
         auth: Authorization? = null,
-    ): Either<List<String>, T> {
+    ): Either<NonEmptyList<String>, T> {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(host)
@@ -52,7 +54,7 @@ class HttpClient {
                 .use { objectMapper.readValue(it.body.bytes(), clazz) }
                 .right()
         } catch (e: Exception) {
-            listOf(e.messageWithStackTrace()).left()
+            nonEmptyListOf(e.messageWithStackTrace()).left()
         }
     }
 
@@ -61,7 +63,7 @@ class HttpClient {
         requestBodyObject: Req,
         responseBodyClass: Class<Res>,
         auth: Authorization? = null,
-    ): Either<List<String>, Res> {
+    ): Either<NonEmptyList<String>, Res> {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(host)
@@ -83,7 +85,7 @@ class HttpClient {
                 .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
                 .right()
         } catch (e: Exception) {
-            listOf(e.messageWithStackTrace()).left()
+            nonEmptyListOf(e.messageWithStackTrace()).left()
         }
     }
 
@@ -91,7 +93,7 @@ class HttpClient {
         host: String, path: String,
         responseBodyClass: Class<T>,
         auth: Authorization? = null,
-    ): Either<List<String>, T> {
+    ): Either<NonEmptyList<String>, T> {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(host)
@@ -110,7 +112,7 @@ class HttpClient {
                 .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
                 .right()
         } catch (e: Exception) {
-            listOf(e.messageWithStackTrace()).left()
+            nonEmptyListOf(e.messageWithStackTrace()).left()
         }
     }
 

@@ -1,6 +1,7 @@
 package io.jenkins.plugins.lgtm.infrastructure
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import io.jenkins.plugins.lgtm.domain.bitbucket.BitbucketServerAuthentication
 import io.jenkins.plugins.lgtm.domain.bitbucket.BitbucketServerPullRequestApi
 import io.jenkins.plugins.lgtm.domain.bitbucket.BitbucketServerUser
@@ -20,7 +21,7 @@ class BitbucketServerPullRequestApiImpl(
         commentText: String,
         pullRequest: PullRequest,
         authentication: BitbucketServerAuthentication
-    ): Either<List<String>, *> =
+    ): Either<NonEmptyList<String>, *> =
         httpClient.post(
             hostName,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
@@ -33,7 +34,7 @@ class BitbucketServerPullRequestApiImpl(
     override fun fetchAllCommentsIn(
         pullRequest: PullRequest,
         authentication: BitbucketServerAuthentication
-    ): Either<List<String>, List<PullRequestComment>> =
+    ): Either<NonEmptyList<String>, List<PullRequestComment>> =
         httpClient.get(
             hostName,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/activities",
@@ -49,7 +50,7 @@ class BitbucketServerPullRequestApiImpl(
         pullRequest: PullRequest,
         comment: PullRequestComment,
         authentication: BitbucketServerAuthentication
-    ): Either<List<String>, *> =
+    ): Either<NonEmptyList<String>, *> =
         httpClient.delete(
             hostName,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments/${comment.id}",
