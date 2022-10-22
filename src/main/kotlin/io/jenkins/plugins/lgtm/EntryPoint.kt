@@ -2,8 +2,8 @@ package io.jenkins.plugins.lgtm
 
 import io.jenkins.plugins.lgtm.domain.bitbucket.PullRequest
 import io.jenkins.plugins.lgtm.presentation.JenkinsLogger
-import io.jenkins.plugins.lgtm.usecase.ApprovalUsecase
-import io.jenkins.plugins.lgtm.usecase.UnapprovalUsecase
+import io.jenkins.plugins.lgtm.usecase.ApprovedUsecase
+import io.jenkins.plugins.lgtm.usecase.UnapprovedUsecase
 import java.io.PrintStream
 
 class EntryPoint(
@@ -16,6 +16,7 @@ class EntryPoint(
     private val username: String,
     private val password: String,
     private val pullRequestId: String,
+    private val eventKey: String,
 ) {
 
     fun start() {
@@ -26,9 +27,9 @@ class EntryPoint(
             return
         }
 
-        val usecase = when ("webhook name") {
-            "approval" -> ApprovalUsecase()
-            "unapproval" -> UnapprovalUsecase()
+        val usecase = when (eventKey) {
+            "pr:reviewer:approved" -> ApprovedUsecase()
+            "pr:reviewer:unapproved" -> UnapprovedUsecase()
             else -> {
                 JenkinsLogger.info("webhook name trigger is not target of this job.")
                 return

@@ -33,18 +33,21 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
     private final String organizationName;
     private final String repositoryName;
     private final String pullRequestId;
+    private final String eventKey;
 
     @DataBoundConstructor
     public ApproveLgtmBuilder(@NotNull final String inputName,
                               @NotNull final String definedName,
                               @NotNull final String organizationName,
                               @NotNull final String repositoryName,
-                              @NotNull final String pullRequestId) {
+                              @NotNull final String pullRequestId,
+                              @NotNull final String eventKey) {
         this.inputName = inputName;
         this.definedName = definedName;
         this.organizationName = organizationName;
         this.repositoryName = repositoryName;
         this.pullRequestId = pullRequestId;
+        this.eventKey = eventKey;
     }
 
     @Override
@@ -63,7 +66,7 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
             descriptor.getHostName(), organizationName, repositoryName,
             bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getUsername).orElseThrow(),
             bitbucketUsernamePassword.map(UsernamePasswordCredentialsImpl::getPassword).map(Secret::getPlainText).orElseThrow(),
-            pullRequestId
+            pullRequestId, eventKey
         ).start();
     }
 
