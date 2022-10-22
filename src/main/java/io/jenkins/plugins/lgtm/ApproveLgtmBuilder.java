@@ -17,6 +17,8 @@ import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +28,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
+@Getter
+@RequiredArgsConstructor(onConstructor = @__(@DataBoundConstructor))
 public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
 
     private final String inputName;
@@ -34,41 +38,6 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
     private final String repositoryName;
     private final String pullRequestId;
     private final String eventKey;
-
-    @DataBoundConstructor
-    public ApproveLgtmBuilder(@NotNull final String inputName,
-                              @NotNull final String definedName,
-                              @NotNull final String organizationName,
-                              @NotNull final String repositoryName,
-                              @NotNull final String pullRequestId,
-                              @NotNull final String eventKey) {
-        this.inputName = inputName;
-        this.definedName = definedName;
-        this.organizationName = organizationName;
-        this.repositoryName = repositoryName;
-        this.pullRequestId = pullRequestId;
-        this.eventKey = eventKey;
-    }
-
-    public String getInputName() {
-        return inputName;
-    }
-
-    public String getDefinedName() {
-        return definedName;
-    }
-
-    public String getOrganizationName() {
-        return organizationName;
-    }
-
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
-    public String getPullRequestId() {
-        return pullRequestId;
-    }
 
     @Override
     public void perform(@NotNull final Run<?, ?> run,
@@ -92,6 +61,7 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
 
     @Symbol("approveLgtm")
     @Extension
+    @Getter
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
         private String hostName;
@@ -99,14 +69,6 @@ public class ApproveLgtmBuilder extends Builder implements SimpleBuildStep {
 
         public DescriptorImpl() {
             super.load();
-        }
-
-        public String getHostName() {
-            return hostName;
-        }
-
-        public String getUsernamePasswordId() {
-            return usernamePasswordId;
         }
 
         @Override
