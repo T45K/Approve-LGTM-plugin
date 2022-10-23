@@ -94,12 +94,11 @@ open class HttpClient {
         }
     }
 
-    fun <T> delete(
-        responseBodyClass: Class<T>,
+    fun delete(
         base: String, path: String,
         params: Map<String, List<String>> = emptyMap(),
         auth: Authorization? = null,
-    ): Either<NonEmptyList<String>, T> {
+    ): Either<NonEmptyList<String>, Unit> {
         val url = base.toHttpUrl().newBuilder()
             .addPathSegments(path)
             .addQueryParameters(params)
@@ -114,8 +113,8 @@ open class HttpClient {
         return try {
             client.newCall(request)
                 .execute()
-                .use { jsonMapper.readValue(it.body.bytes(), responseBodyClass) }
-                .right()
+                .close()
+            Either.Right(Unit)
         } catch (e: Exception) {
             nonEmptyListOf(e.stackTraceToString()).left()
         }

@@ -22,10 +22,7 @@ class AuthenticatedBitbucketServerUser(
             .map { comments ->
                 comments.filter { it.user.hasSameName(this) }.find { it.isLgtmPictureComment() }
             }.flatMap {
-                if (it == null) {
-                    Either.Right(Unit)
-                } else {
-                    bitbucketServerPullRequestApi.deleteComment(pr, it, authentication)
-                }
+                if (it != null) bitbucketServerPullRequestApi.deleteComment(pr, it, authentication)
+                else Either.Right(Unit)
             }
 }

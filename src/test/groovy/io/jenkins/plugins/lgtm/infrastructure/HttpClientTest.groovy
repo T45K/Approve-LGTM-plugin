@@ -163,7 +163,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody('{}'))
 
         when:
-        final def either = sut.delete(JsonNode, mockWebServer.url('').toString(), '', [:], null)
+        final def either = sut.delete(mockWebServer.url('').toString(), '', [:], null)
 
         then:
         either.isRight()
