@@ -16,7 +16,7 @@ class UnapprovedUsecase : Usecase {
                 throw JobFailureException()
             }
 
-            is Either.Right -> JenkinsLogger.info("Succeeded to execute unapproval job.")
+            is Either.Right -> JenkinsLogger.info("Succeeded to execute unapproved job.")
         }
     }
 }

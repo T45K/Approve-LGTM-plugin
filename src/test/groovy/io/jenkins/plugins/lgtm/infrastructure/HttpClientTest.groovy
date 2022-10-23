@@ -35,7 +35,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody(responseBody))
 
         expect:
-        sut.get(mockWebServer.url(path).toString(), path, JsonStructure, null).orNull() ==
+        sut.get(JsonStructure, mockWebServer.url(path).toString(), path, [:], null).orNull() ==
             new JsonStructure(1, 'str', true, null,
                 new JsonStructure.Inner('value'),
                 ['foo', 'bar', 'baz'])
@@ -63,7 +63,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody(responseBody))
 
         when:
-        final def jsonNode = sut.get(mockWebServer.url('').toString(), '', JsonNode, null).orNull()
+        final def jsonNode = sut.get(JsonNode, mockWebServer.url('').toString(), '', [:], null).orNull()
 
         then:
         jsonNode['intValue'].asInt() == 1
@@ -95,7 +95,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody(responseBody))
 
         expect:
-        sut.get(mockWebServer.url('').toString(), '', JsonStructure, null).orNull() ==
+        sut.get(JsonStructure, mockWebServer.url('').toString(), '', [:], null).orNull() ==
             new JsonStructure(1, 'str', true, null,
                 new JsonStructure.Inner('value'),
                 ['foo', 'bar', 'baz'])
@@ -112,7 +112,7 @@ class HttpClientTest extends Specification {
         }
 
         expect:
-        sut.get(mockWebServer.url('').toString(), '', JsonNode, auth).isRight() == isSuccessful
+        sut.get(JsonNode, mockWebServer.url('').toString(), '', [:], auth).isRight() == isSuccessful
 
         where:
         auth                                            || isSuccessful
@@ -127,7 +127,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody(responseBody))
 
         when:
-        final def either = sut.get(mockWebServer.url('').toString(), '', JsonStructure, null)
+        final def either = sut.get(JsonStructure, mockWebServer.url('').toString(), '', [:], null)
 
         then:
         either.isLeft()
@@ -142,7 +142,7 @@ class HttpClientTest extends Specification {
             ['foo', 'bar', 'baz'])
 
         when:
-        final def either = sut.post(mockWebServer.url('').toString(), '', requestBody, JsonNode, null)
+        final def either = sut.post(requestBody, JsonNode, mockWebServer.url('').toString(), '', [:], null)
 
         then:
         either.isRight()
@@ -163,7 +163,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody('{}'))
 
         when:
-        final def either = sut.delete(mockWebServer.url('').toString(), '', JsonNode, null)
+        final def either = sut.delete(JsonNode, mockWebServer.url('').toString(), '', [:], null)
 
         then:
         either.isRight()

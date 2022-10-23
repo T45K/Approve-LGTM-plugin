@@ -16,7 +16,7 @@ class ApprovedUsecase : Usecase {
                 throw JobFailureException()
             }
 
-            is Either.Right -> JenkinsLogger.info("Succeeded to execute approval job.")
+            is Either.Right -> JenkinsLogger.info("Succeeded to execute approved job.")
         }
     }
 }
