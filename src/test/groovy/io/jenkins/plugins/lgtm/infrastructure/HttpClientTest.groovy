@@ -127,7 +127,7 @@ class HttpClientTest extends Specification {
         mockWebServer.enqueue(new MockResponse().setBody(responseBody))
 
         when:
-        final def either = sut.get(JsonNode, mockWebServer.url('').toString(), '', [:], null)
+        final def either = sut.get(JsonStructure, mockWebServer.url('').toString(), '', [:], null)
 
         then:
         either.isLeft()
