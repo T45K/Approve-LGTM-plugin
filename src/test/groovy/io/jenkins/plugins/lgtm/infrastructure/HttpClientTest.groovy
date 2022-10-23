@@ -76,6 +76,31 @@ class HttpClientTest extends Specification {
         jsonNode['listValue'].asList()[2].asText() == 'baz'
     }
 
+    def 'get ignores JSON properties defined the given class'() {
+        given:
+        final def responseBody = '''
+            {
+                "intValue"     : 1,
+                "stringValue"  : "str",
+                "booleanValue" : true,
+                "nullValue"    : null,
+                "objectValue"  : {
+                    "key": "value"
+                },
+                "listValue"    : ["foo", "bar", "baz"],
+                "unknown"      : false
+            }
+        '''
+
+        mockWebServer.enqueue(new MockResponse().setBody(responseBody))
+
+        expect:
+        sut.get(mockWebServer.url('').toString(), '', JsonStructure, null).orNull() ==
+            new JsonStructure(1, 'str', true, null,
+                new JsonStructure.Inner('value'),
+                ['foo', 'bar', 'baz'])
+    }
+
     def 'get returns failure when auth is needed'() {
         given:
         mockWebServer.dispatcher = { final RecordedRequest recordedRequest ->

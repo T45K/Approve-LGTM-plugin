@@ -5,7 +5,8 @@ import arrow.core.NonEmptyList
 import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import io.jenkins.plugins.lgtm.domain.Authorization
 import io.jenkins.plugins.lgtm.util.`|`
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -30,7 +31,9 @@ open class HttpClient {
             response
         })
         .build()
-    private val objectMapper = jacksonObjectMapper()
+    private val jsonMapper = jacksonMapperBuilder()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .build()
 
     open fun <T> get(
         base: String, path: String, clazz: Class<T>,
@@ -47,7 +50,7 @@ open class HttpClient {
         return try {
             client.newCall(request)
                 .execute()
-                .use { objectMapper.readValue(it.body.bytes(), clazz) }
+                .use { jsonMapper.readValue(it.body.bytes(), clazz) }
                 .right()
         } catch (e: Exception) {
             nonEmptyListOf(e.stackTraceToString()).left()
@@ -62,7 +65,7 @@ open class HttpClient {
     ): Either<NonEmptyList<String>, Res> {
         val url = base.toHttpUrl().newBuilder().addPathSegments(path).build()
 
-        val requestBody = objectMapper.writeValueAsString(requestBodyObject)
+        val requestBody = jsonMapper.writeValueAsString(requestBodyObject)
             .toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
@@ -74,7 +77,7 @@ open class HttpClient {
         return try {
             client.newCall(request)
                 .execute()
-                .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
+                .use { jsonMapper.readValue(it.body.bytes(), responseBodyClass) }
                 .right()
         } catch (e: Exception) {
             nonEmptyListOf(e.stackTraceToString()).left()
@@ -97,7 +100,7 @@ open class HttpClient {
         return try {
             client.newCall(request)
                 .execute()
-                .use { objectMapper.readValue(it.body.bytes(), responseBodyClass) }
+                .use { jsonMapper.readValue(it.body.bytes(), responseBodyClass) }
                 .right()
         } catch (e: Exception) {
             nonEmptyListOf(e.stackTraceToString()).left()
