@@ -23,11 +23,11 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, *> =
         httpClient.post(
-            baseUrl,
-            "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
             PullRequestCommentRequest(commentText),
             Any::class.java,
-            authentication,
+            baseUrl,
+            "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments",
+            auth = authentication,
         ).mapLeft { it + "Failed to post comment." }
 
     // https://developer.atlassian.com/server/bitbucket/rest/v805/api-group-pull-requests/#api-api-latest-projects-projectkey-repos-repositoryslug-pull-requests-pullrequestid-activities-get
@@ -36,14 +36,21 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, List<PullRequestComment>> =
         httpClient.get(
+            ActivitiesResponse::class.java,
             baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/activities",
-            ActivitiesResponse::class.java,
-            authentication
+            auth = authentication
         ).map { response ->
             response.values
                 .filter { it.isCommentAction() }
-                .map { PullRequestComment(it.comment!!.id, it.comment.text, BitbucketServerUser(it.user.name)) }
+                .map {
+                    PullRequestComment(
+                        it.comment!!.id,
+                        it.comment.text,
+                        it.comment.version,
+                        BitbucketServerUser(it.user.name)
+                    )
+                }
         }.mapLeft { it + "Failed to fetch comments." }
 
     override fun deleteComment(
@@ -52,9 +59,10 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, *> =
         httpClient.delete(
+            Any::class.java,
             baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments/${comment.id}",
-            Any::class.java,
+            mapOf("version" to listOf(comment.version.toString())),
             authentication
         ).mapLeft { it + "Failed to delete comment." }
 }
@@ -65,7 +73,7 @@ data class ActivitiesResponse(val values: List<ActivityResponse>) {
     data class ActivityResponse(val action: String, val comment: CommentResponse?, val user: UserResponse) {
         data class UserResponse(val name: String)
 
-        data class CommentResponse(val id: Int, val text: String)
+        data class CommentResponse(val id: Int, val version: Int, val text: String)
 
         fun isCommentAction(): Boolean = this.action == "COMMENTED" && this.comment != null
     }

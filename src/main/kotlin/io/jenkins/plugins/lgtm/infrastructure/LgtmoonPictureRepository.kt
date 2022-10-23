@@ -14,7 +14,7 @@ class LgtmoonPictureRepository(
     }
 
     override fun findRandom(): Either<NonEmptyList<String>, LgtmPicture> =
-        httpClient.get(base, path, LgtmoonApiResponse::class.java)
+        httpClient.get(LgtmoonApiResponse::class.java, base, path)
             .map { LgtmPicture(it.images[0].url) }
             .mapLeft { it + "Failed to fetch LGTM picture." }
 }
