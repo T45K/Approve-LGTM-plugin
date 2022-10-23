@@ -59,7 +59,6 @@ class BitbucketServerPullRequestApiImpl(
         authentication: BitbucketServerAuthentication
     ): Either<NonEmptyList<String>, *> =
         httpClient.delete(
-            Any::class.java,
             baseUrl,
             "rest/api/latest/projects/$organizationName/repos/$repositoryName/pull-requests/${pullRequest.id}/comments/${comment.id}",
             mapOf("version" to listOf(comment.version.toString())),
